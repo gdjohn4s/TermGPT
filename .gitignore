@@ -26,3 +26,6 @@ ENV/
 *.njsproj
 *.sln
 *.sw?
+
+# Software logs
+shellGPT.log
