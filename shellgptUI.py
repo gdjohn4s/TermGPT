@@ -1,5 +1,6 @@
 # shellgptui.py
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from dotenv import load_dotenv
 from shellgpt import ShellGPT
 from textual.widgets import (
@@ -34,6 +35,13 @@ class ShellGPTUi(App):
    }
    """
 
+   BINDINGS = [
+      ("a", "add", "Add tab"),
+      ("r", "remove", "Remove active tab"),
+      ("c", "clear", "Clear tabs"),
+      Binding(key="q", action="quit", description="Quit the app"),
+    ]
+
    def __init__(self):
       super().__init__()
       self.tabs_counter = 0
@@ -45,6 +53,23 @@ class ShellGPTUi(App):
       yield self.md
       yield Input(placeholder="ShellGPT> ")
       yield Footer()
+
+   def action_add(self) -> None:
+      """Add a new tab."""
+      tabs = self.query_one(Tabs)
+      self.tabs_counter += 1
+      tabs.add_tab(f"New tab #{self.tabs_counter}")
+
+   def action_remove(self) -> None:
+      """Remove active tab."""
+      tabs = self.query_one(Tabs)
+      active_tab = tabs.active_tab
+      if active_tab is not None:
+         tabs.remove_tab(active_tab.id)
+
+   def action_clear(self) -> None:
+      """Clear the tabs."""
+      self.query_one(Tabs).clear()
 
    def on_mount(self):
       self.query_one(Tabs).focus()
