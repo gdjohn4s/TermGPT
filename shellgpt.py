@@ -28,6 +28,12 @@ class ShellGPT:
       self.model = model
       self.role = role
       self.delay = 0.01
+      self.total_tokens_used = 0
+
+   def increment_tokens(self, text) -> None:
+      assert isinstance(text, dict)
+      tokens: int = text.get("usage", "").get("total_tokens", "")
+      self.total_tokens_used += tokens
 
    def simulate_typing(self, text):
       self.delay = 0.007 if 100 < len(text) < 250 else 0.004
