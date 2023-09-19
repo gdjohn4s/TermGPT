@@ -17,12 +17,6 @@ class ShellGPT:
       the model you want to use like: gpt-3.5-turbo
 
    """
-   BINDINGS = [
-      ("t", "toggle_table_of_contents", "TOC"),
-      ("b", "back", "Back"),
-      ("f", "forward", "Forward"),
-      ("q", "quit", "Exit")
-    ]
 
    def __init__(self, model="gpt-3.5-turbo", role="user"):
       self.model = model
