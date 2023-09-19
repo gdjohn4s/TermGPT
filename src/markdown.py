@@ -3,8 +3,6 @@ from textual.app import App, ComposeResult
 from textual.reactive import var
 
 from pathlib import Path
-from sys import argv
-
 
 class MarkdownApp(App):
     BINDINGS = [
@@ -13,8 +11,6 @@ class MarkdownApp(App):
         ("f", "forward", "Forward"),
         ("q", "quit", "Exit")
     ]
-
-    path = var(Path(__file__).parent / "demo.md")
 
     @property
     def markdown_viewer(self) -> MarkdownViewer:
@@ -46,5 +42,5 @@ class MarkdownApp(App):
 
 if __name__ == "__main__":
     app = MarkdownApp()
-    app.path = Path(r'TODO.md')
+    app.path = Path(r'./TODO.md')
     app.run()

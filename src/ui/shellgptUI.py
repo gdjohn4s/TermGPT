@@ -1,8 +1,8 @@
 # shellgptui.py
 from textual.app import App, ComposeResult
+from engine.shellgpt import ShellGPT
 from textual.binding import Binding
 from dotenv import load_dotenv
-from shellgpt import ShellGPT
 from textual.widgets import (
    Markdown, 
    Footer,     
@@ -19,6 +19,12 @@ openai.api_key = os.getenv("API_KEY")
 
 
 class ShellGPTUi(App):
+   """
+   This class represents the ShellGPT UI. 
+   
+   All widgets logic will be described here.
+   """
+
    CSS = """
    Tabs {
       dock: top;
@@ -49,6 +55,7 @@ class ShellGPTUi(App):
       self.md = Markdown()
 
    def compose(self) -> ComposeResult:
+      """Create the components using textual Widgets"""
       yield Tabs(f"New tab #{self.tabs_counter}")
       yield self.md
       yield Input(placeholder="ShellGPT> ")
@@ -72,9 +79,11 @@ class ShellGPTUi(App):
       self.query_one(Tabs).clear()
 
    def on_mount(self):
+      """Set the pointer widget to focus"""
       self.query_one(Tabs).focus()
 
    def on_tabs_tab_activated(self, event):
+      """Logic on tab activated"""
       label = self.query_one(Markdown)
       if event.tab is None:
          label.visible = False
@@ -86,6 +95,11 @@ class ShellGPTUi(App):
 
    @on(Input.Submitted)
    def send_to_chatgpt(self, event):
+      """
+      This function is triggered on Input.Submitted event.
+
+      Run the shellGPT engine calling openAI API and update the Markdown widget on the Terminal.
+      """
       if event.value:
          gpt_content = self.shellGPT.run(event.value)
          gpt_parsed = self.shellGPT.parse_chat_content(gpt_content)
