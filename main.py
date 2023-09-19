@@ -1,4 +1,5 @@
-# main.py
+#!/usr/bin/env python -O
+
 from shellgptUI import ShellGPTUi
 
 if __name__ == '__main__':
