@@ -1,0 +1,7 @@
+# Shell GPT configuration file
+local:
+  configuration_path: ""
+
+shellGPT:
+  api_key: ""
+  tokens_used: 0
