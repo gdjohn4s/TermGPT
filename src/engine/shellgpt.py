@@ -24,20 +24,24 @@ class ShellGPT:
       self.delay = 0.01
       self.total_tokens_used = 0
 
-   def increment_tokens(self, text) -> None:
+   def increment_and_get_tokens(self, text) -> int:
       """
-      Increment the total tokens used
+      Update the total tokens used and returns it
 
       ...
 
       Attributes
       ----------
       text : dict
-         the text returted by openai API
+      
+      Returns
+      ----------
+      tokens : int
       """
       assert isinstance(text, dict)
       tokens: int = text.get("usage", "").get("total_tokens", "")
       self.total_tokens_used += tokens
+      return self.total_tokens_used
 
    def simulate_typing(self, text):
       """
@@ -83,3 +87,6 @@ class ShellGPT:
          model=self.model, messages=[{"role": self.role, "content": content}]
       )
       return chat_completion
+   
+   def __del__(self) -> None:
+      print("Destroyed {}".format(self))
