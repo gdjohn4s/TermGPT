@@ -1,10 +1,14 @@
 # Todo List
 
+### Bugs
+
+- [ ] The input widget cannot be used for large inputs, like code
+
 ### UI
 
 - [ARCHIVED] Set the markdown content on botton left
 - [x] Display total tokens used information somewhere
-  - [ ] Parse response to get tokens
+  - [x] Parse response to get tokens
 - [ ] Create a sidebar menu with some settings
   - [ ] Choose model to use
   - [ ] Set new API key
@@ -12,6 +16,7 @@
 
 ### Engine
 
+- [ ] Set data persistence
 - [x] Parse arguments to configure:
   - [ ] Open ai Api key
   - [ ] Switch to open ai or ShellGPT model
@@ -23,7 +28,7 @@
 
 ## Priority tasks
 
-- [ ] Set the markdown content on botton left
+- [ARCHIVED] Set the markdown content on botton left
 
 ## Tasks completed
 
