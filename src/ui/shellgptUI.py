@@ -1,11 +1,16 @@
 # shellgptui.py
+from textual.containers import ScrollableContainer
 from textual.app import App, ComposeResult
+from textual.reactive import reactive
 from engine.shellgpt import ShellGPT
 from textual.binding import Binding
+from textual.widget import Widget
 from dotenv import load_dotenv
 from textual.widgets import (
-   Markdown, 
+   MarkdownViewer,
+   Markdown,
    Footer,     
+   Label,
    Input, 
    Tabs, 
 ) 
@@ -16,6 +21,18 @@ import os
 
 load_dotenv()  # Load environment variables
 openai.api_key = os.getenv("API_KEY")
+
+
+class UpdateTokens(Widget):
+   """Represent the total token used for one istance."""
+
+   ref_tokens = reactive(0)
+
+   def update(self, token):
+      self.ref_tokens = token
+
+   def render(self) -> str:
+      return f"Tokens used: {self.ref_tokens}"
 
 
 class ShellGPTUi(App):
@@ -32,12 +49,21 @@ class ShellGPTUi(App):
    Screen {
       align: center middle;
    }
+   Label {
+      margin: 0 5 0 0;
+   }
    Markdown {
       margin: 1 1;
       width: 100%;
-      height: 85%;
+      height: 100%;
       border: tall $primary;
       content-align: left bottom;
+   }
+   ScrollableContainer {
+      height: 90%;
+   }
+   UpdateTokens {
+      height: 3%;
    }
    """
 
@@ -45,6 +71,7 @@ class ShellGPTUi(App):
       ("a", "add", "Add tab"),
       ("r", "remove", "Remove active tab"),
       ("c", "clear", "Clear tabs"),
+      Binding(key="C-v", action="quit", description="Copy the code"),
       Binding(key="q", action="quit", description="Quit the app"),
     ]
 
@@ -53,13 +80,21 @@ class ShellGPTUi(App):
       self.tabs_counter = 0
       self.shellGPT = ShellGPT()
       self.md = Markdown()
+      self.tokens = UpdateTokens()
+      self.vertical_scroll = ScrollableContainer(
+         self.md
+      )
 
    def compose(self) -> ComposeResult:
       """Create the components using textual Widgets"""
       yield Tabs(f"New tab #{self.tabs_counter}")
-      yield self.md
+      yield self.tokens
+      yield self.vertical_scroll
       yield Input(placeholder="ShellGPT> ")
       yield Footer()
+
+   def compose_md_view(self, md: str) -> ComposeResult:
+      yield MarkdownViewer()
 
    def action_add(self) -> None:
       """Add a new tab."""
@@ -74,7 +109,7 @@ class ShellGPTUi(App):
       if active_tab is not None:
          tabs.remove_tab(active_tab.id)
 
-   def action_clear(self) -> None:
+   def action_clear(self) -> None:  
       """Clear the tabs."""
       self.query_one(Tabs).clear()
 
@@ -103,4 +138,5 @@ class ShellGPTUi(App):
       if event.value:
          gpt_content = self.shellGPT.run(event.value)
          gpt_parsed = self.shellGPT.parse_chat_content(gpt_content)
+         self.tokens.update(12)
          self.md.update(markdown=gpt_parsed)
