@@ -15,12 +15,22 @@ from textual.widgets import (
    Tabs, 
 ) 
 from textual import on
+import atexit
 import openai
 import os
 
 
 load_dotenv()  # Load environment variables
 openai.api_key = os.getenv("API_KEY")
+
+
+def __save_info() -> None:
+   """Save the instance information to data persistence"""
+   # TODO: Implement this
+   print("TEST INFO")
+
+
+atexit.register(__save_info)
 
 
 class UpdateTokens(Widget):
@@ -138,5 +148,5 @@ class ShellGPTUi(App):
       if event.value:
          gpt_content = self.shellGPT.run(event.value)
          gpt_parsed = self.shellGPT.parse_chat_content(gpt_content)
-         self.tokens.update(12)
+         self.tokens.update(self.shellGPT.increment_and_get_tokens(gpt_content))
          self.md.update(markdown=gpt_parsed)
