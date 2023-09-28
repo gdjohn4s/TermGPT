@@ -1,7 +1,8 @@
 <h1 align="center">
   <br>
-  <a href=""><img src="./assets/logo_nobg.png" alt="ShellGPT" width="400"></a>
+  <a href=""><img src="./assets/logo.png" alt="ShellGPT" width="150" style="border-radius: 6px;"></a>
   <br>
+  <br />
   ShellGPT
   <br>
 </h1>
