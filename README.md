@@ -3,7 +3,7 @@
   <a href=""><img src="./assets/logo.png" alt="ShellGPT" width="150" style="border-radius: 6px;"></a>
   <br>
   <br />
-  ShellGPT
+  TermGPT
   <br>
 </h1>
 
