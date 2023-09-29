@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href=""><img src="./assets/logo.png" alt="TermGPT" width="150" style="border-radius: 6px;"></a>
+  <a href=""><img src="./assets/logo.png" alt="TermGPT" width="150" style="border-radius: 8px;"></a>
   <br>
   <br />
   TermGPT
