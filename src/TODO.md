@@ -16,9 +16,9 @@
 
 ### Engine
 
-- [ ] Set data persistence
+- [x] Set data persistence
 - [x] Parse arguments to configure:
-  - [ ] Open ai Api key
+  - [x] Open ai Api key
   - [ ] Switch to open ai or ShellGPT model
 - [ ] Create chatbot model ai
 

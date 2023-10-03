@@ -1,9 +1,9 @@
 #!/usr/bin/env python -O
 
-from ui.shellgptUI import ShellGPTUi
+from src.ui.termgptUI import TermGPTUi
 from cli import Cli
 
 if __name__ == '__main__':
     cli = Cli()
-    app = ShellGPTUi()
+    app = TermGPTUi()
     app.run()
