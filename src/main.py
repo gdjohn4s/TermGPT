@@ -1,6 +1,5 @@
 #!/usr/bin/env python -O
-
-from src.ui.termgptUI import TermGPTUi
+from ui.termgptUI import TermGPTUi
 from cli import Cli
 
 if __name__ == '__main__':
