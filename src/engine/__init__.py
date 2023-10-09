@@ -1,5 +1,6 @@
 from _info import initial_config
 from dotenv import load_dotenv
+from datetime import datetime
 import platform
 import logging
 import yaml
@@ -32,6 +33,19 @@ def create_yaml_config() -> None:
     create_yaml_config()
 
 
+def update_yaml_config(new_config: dict[str, int | str]):
+    if datetime.now().day == 1: new_config = initial_config['shellGPT']['tokens'] = 0
+    with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as nc:
+        yaml.dump(new_config, nc, default_flow_style=False)
+
+
+def get_tokens_from_yaml() -> int:
+    with open(f"{_config_path}/{_CONFIG_FILE}", "r") as cfg:
+        tmp_yaml = yaml.safe_load(cfg)
+        print(tmp_yaml)
+        return tmp_yaml['shellGPT']['token_used']
+
+
 if _os == "Windows":
     # TODO: Windows Path configuration file
     # Win: C:\
@@ -56,5 +70,6 @@ assert os.getenv("API_KEY") != "<YOUR_API_KEY>", "Please enter your API key"
 __all__ = [
     _os,
     _home,
-    _config_path
+    _config_path,
+    _CONFIG_FILE
 ]
