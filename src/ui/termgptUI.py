@@ -2,8 +2,8 @@
 from textual.containers import ScrollableContainer
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
-from src.engine.termgpt import ShellGPT
 from textual.binding import Binding
+from engine.termgpt import TermGPT
 from textual.widget import Widget
 from dotenv import load_dotenv
 from textual.widgets import (
@@ -15,42 +15,50 @@ from textual.widgets import (
 )
 from datetime import datetime
 from textual import on
-import atexit
+from enum import Enum
 import openai
 import os
 
+from _info import initial_config
+from engine import (
+    update_yaml_config, 
+    get_tokens_from_yaml,
+)
+
 load_dotenv()  # Load environment variables
 openai.api_key = os.getenv("API_KEY")
-
-
-def __save_info() -> None:
-    """Save the instance information to data persistence"""
-    # TODO: Implement this
-    print("TEST INFO PIPPO")
-
-
-atexit.register(__save_info)
-
 date = lambda : datetime.now().strftime("%H:%M:%S")
+
 
 def compose_md_view(md: str) -> ComposeResult:
     yield MarkdownViewer()
+
 
 def get_pages_content(page: list) -> str:
     content: str = ""
     for sentence in page: content += f"{sentence}\n\n"
     return content
 
+
+class TermGPTState(Enum):
+    START: str = "start"
+    MIDDLE: str = "middle"
+
+
 class UpdateTokens(Widget):
     """Represent the total token used for one istance."""
 
     ref_tokens = reactive(0)
+    ref_monthly_tokens = reactive(get_tokens_from_yaml())
 
-    def update(self, token):
+    def update(self, token): 
         self.ref_tokens = token
 
-    def render(self) -> str:
-        return f"Tokens used: {self.ref_tokens}"
+    def get_tokens(self) -> int: 
+        return self.ref_tokens
+    
+    def render(self) -> str: 
+        return f"Session tokens used: {self.ref_tokens} | Monthly tokens used: {self.ref_monthly_tokens}"
 
 
 class TermGPTUi(App):
@@ -60,7 +68,7 @@ class TermGPTUi(App):
    All widgets logic will be described here.
    """
     
-    GREETINGS: str = f" Hi {os.getenv('USER')}! Welcome in shellGPT\n Please insert an input to start using me"
+    GREETINGS: str = f"[{date()}] Hi {os.getenv('USER')}! Welcome in shellGPT\n Please insert an input to start using me"
 
     CSS = """
    Tabs {
@@ -74,6 +82,7 @@ class TermGPTUi(App):
    }
    Markdown {
       margin: 1 1;
+      padding: 0 2;
       width: 100%;
       height: 100%;
       border: tall $primary;
@@ -105,19 +114,29 @@ class TermGPTUi(App):
 
     def __init__(self):
         super().__init__()
+        self.ui_states = TermGPTState.START
         self.tabs_counter = 0
-        self.shellGPT = ShellGPT()
+        self.shellGPT = TermGPT()
         self.md = Markdown()
         self.tokens = UpdateTokens()
         self.vertical_scroll = ScrollableContainer(
             self.md
         )
 
+    def get_tokens_used(self) -> int: return self.tokens.ref_tokens
+
+    def _save_info(self) -> None:
+        """Save the instance information to data persistence"""
+        updated_tokens = (self.tokens.ref_monthly_tokens + self.get_tokens_used())
+        new_config = initial_config
+        new_config['shellGPT']['token_used'] = updated_tokens
+        update_yaml_config(new_config=new_config)
+
     def compose(self) -> ComposeResult:
         """Create the components using textual Widgets"""
         yield Tabs(f"New tab #{self.tabs_counter}")
         yield self.vertical_scroll
-        yield Input(placeholder="ShellGPT> ")
+        yield Input(placeholder="TermGPT> ")
         yield self.tokens
         yield Footer()
 
@@ -148,6 +167,11 @@ class TermGPTUi(App):
 
     @on(Tabs.TabActivated)
     def handle_history_and_new_tabs(self, event: Tabs.TabActivated):
+        """
+        This function is triggered when the user switch between tabs.
+
+        It updates the tab page content restoring tab data using tab id.
+        """
         md_tab = self.query_one(Markdown)
         if event.tab is None:
             md_tab.visible = False
@@ -159,17 +183,18 @@ class TermGPTUi(App):
                 return
 
             self.tab_id: int = int(event.tab.id.replace("tab-", "")) - 1
-            if self.tab_id == 0: return
+            if self.tab_id == 0 and self.ui_states == TermGPTState.START: return
             restored_page = get_pages_content(self.md_pages[self.tab_id])
             md_tab.update(restored_page)
 
     @on(Input.Submitted)
-    def send_to_chatgpt(self, event):
+    async def send_to_chatgpt(self, event: Input.Submitted):
         """
         This function is triggered on Input.Submitted event.
 
         Run the shellGPT engine calling openAI API and update the Markdown widget on the Terminal.
         """
+        if self.ui_states != TermGPTState.MIDDLE: self.ui_states = TermGPTState.MIDDLE
         if event.value:
             gpt_content: dict = self.shellGPT.run(event.value)
             self.md_gpt_actual_response: str = f"[{date()}] {self.shellGPT.parse_chat_content(gpt_content)}"
@@ -181,3 +206,6 @@ class TermGPTUi(App):
             self.tokens.update(self.shellGPT.increment_and_get_tokens(gpt_content))
             self.md.update(markdown=self.md_gpt_actual_response)
             self.md_responses = []
+            self._save_info()
+
+    # atexit.register(_save_info)
