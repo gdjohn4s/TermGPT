@@ -28,4 +28,4 @@ ENV/
 *.sw?
 
 # Software logs
-shellGPT.log
+termGPT.log

@@ -8,7 +8,13 @@ import os
 
 load_dotenv()
 
-logging.basicConfig(filename='shellGPT.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# TODO: Consider using .local instead of .config directory
+
+logging.basicConfig(
+    filename="termGPT.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 logging.info("Checking configuration")
 
 _CONFIG_FILE: str = "config.yaml"
@@ -18,7 +24,9 @@ _os: str = platform.system()
 
 
 def check_config_path() -> bool:
-    return True if os.path.exists(_config_path) and os.path.isdir(_config_path) else False
+    return (
+        True if os.path.exists(_config_path) and os.path.isdir(_config_path) else False
+    )
 
 
 def create_yaml_config() -> None:
@@ -34,7 +42,8 @@ def create_yaml_config() -> None:
 
 
 def update_yaml_config(new_config: dict[str, int | str]):
-    if datetime.now().day == 1: new_config = initial_config['shellGPT']['tokens'] = 0
+    if datetime.now().day == 1:
+        new_config = initial_config["termGPT"]["tokens"] = 0
     with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as nc:
         yaml.dump(new_config, nc, default_flow_style=False)
 
@@ -43,20 +52,20 @@ def get_tokens_from_yaml() -> int:
     with open(f"{_config_path}/{_CONFIG_FILE}", "r") as cfg:
         tmp_yaml = yaml.safe_load(cfg)
         print(tmp_yaml)
-        return tmp_yaml['shellGPT']['token_used']
+        return tmp_yaml["termGPT"]["token_used"]
 
 
 if _os == "Windows":
     # TODO: Windows Path configuration file
     # Win: C:\
     print("Windows")
-    _home = os.environ['USERPROFILE']
+    _home = os.environ["USERPROFILE"]
 elif _os == "Darwin":
     _home = os.getenv("HOME")
-    _config_path = rf"{_home}/.config/shellGPT"
+    _config_path = rf"{_home}/.config/termGPT"
 elif _os == "Linux":
     _home = os.getenv("HOME")
-    _config_path = rf"{_home}/.config/shellGPT"
+    _config_path = rf"{_home}/.config/termGPT"
 else:
     logging.error("{} os error".format(_os))
     raise OSError
@@ -67,9 +76,4 @@ create_yaml_config()
 # TODO: Edit assert to new configuration logic
 assert os.getenv("API_KEY") != "<YOUR_API_KEY>", "Please enter your API key"
 
-__all__ = [
-    _os,
-    _home,
-    _config_path,
-    _CONFIG_FILE
-]
+__all__ = [_os, _home, _config_path, _CONFIG_FILE]

@@ -8,8 +8,8 @@ class Config:
     SHELL_GPT_TOKEN_USED: int = int()
 
     def __init__(self) -> None:
-       super().__init__()
+        super().__init__()
 
     def parse_config(self) -> dict:
-        with open(_config_path, 'r') as cf:
+        with open(_config_path, "r") as cf:
             return yaml.safe_load(cf)

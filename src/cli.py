@@ -1,5 +1,6 @@
 import argparse
 
+
 class Args:
     SETAPIKEY = "--setKey"
 
@@ -12,5 +13,6 @@ class Cli:
         if not args:
             print("Please provide an argument, use -h or --help to get help.")
 
+    # TODO: Add cli config support
     def __add_to_config(self, config) -> None:
         pass

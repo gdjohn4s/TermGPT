@@ -7,10 +7,53 @@
   <br>
 </h1>
 
-<h4 align="center">Your chatGPT app inside your terminal! Say goodbye to the switch process between windows.</h4>
+<h4 align="center">A Terminal-based Client for ChatGPT! Say goodbye to the switch process between windows.</h4>
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
+  <a href="#features">Key Features</a> •
 </p>
 
 ![screenshot](./assets/Hero.png)
+
+<!-- ABOUT THE PROJECT -->
+
+## About The Project
+
+### Overview
+
+**TermGPT** is a streamlined, terminal-based client designed for seamless interactions with OpenAI's ChatGPT. It's born from the need to eliminate the constant window switching that developers, researchers, and enthusiasts face when jumping between their coding environment and the web-based ChatGPT interface.
+
+### Why TermGPT?
+
+- **Efficiency**: Stay within your terminal environment. No need to switch between windows or apps.
+- **Intuitive Interface**: Designed with simplicity in mind, TermGPT ensures that the user experience is smooth, straightforward, and free of distractions.
+- **Quick Access**: With TermGPT, getting a response from ChatGPT is just a command away, making it incredibly convenient for those who need instant feedback or assistance.
+- **Customizable**: Being open-source, you can customize TermGPT to best fit your workflow and preferences.
+
+### Features
+
+- **Direct Integration**: Communicate with ChatGPT without leaving your terminal.
+- **Responsive UI**: An interface that's easy to navigate and understand, ensuring a seamless chat experience.
+- **Open-Source**: TermGPT is community-driven. Developers are encouraged to contribute, enhance, and tailor the project to their needs.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+
+### Built With
+
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+
+- [Textual](https://textual.textualize.io/)
+- [Rich](https://github.com/Textualize/rich)
+- [OpenAI Library](https://github.com/openai/openai-python)
+
+## Code of Conduct
+
+We value the participation of every member of our community and aim to create an open and welcoming environment. We are committed to fostering a positive culture, free from harassment and discrimination. Please follow our [Code of Conduct](./CODE_OF_CONDUCT.md) when interacting within this project. Adhering to these guidelines helps ensure a productive, harmonious environment for all contributors.
+
+### License
+
+Mit. License
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

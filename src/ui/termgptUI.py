@@ -21,13 +21,13 @@ import os
 
 from _info import initial_config
 from engine import (
-    update_yaml_config, 
+    update_yaml_config,
     get_tokens_from_yaml,
 )
 
 load_dotenv()  # Load environment variables
 openai.api_key = os.getenv("API_KEY")
-date = lambda : datetime.now().strftime("%H:%M:%S")
+date = lambda: datetime.now().strftime("%H:%M:%S")
 
 
 def compose_md_view(md: str) -> ComposeResult:
@@ -36,7 +36,9 @@ def compose_md_view(md: str) -> ComposeResult:
 
 def get_pages_content(page: list) -> str:
     content: str = ""
-    for sentence in page: content += f"{sentence}\n\n"
+    for sentence in page:
+        content += f"{sentence}\n\n"
+
     return content
 
 
@@ -51,24 +53,24 @@ class UpdateTokens(Widget):
     ref_tokens = reactive(0)
     ref_monthly_tokens = reactive(get_tokens_from_yaml())
 
-    def update(self, token): 
+    def update(self, token):
         self.ref_tokens = token
 
-    def get_tokens(self) -> int: 
+    def get_tokens(self) -> int:
         return self.ref_tokens
-    
-    def render(self) -> str: 
+
+    def render(self) -> str:
         return f"Session tokens used: {self.ref_tokens} | Monthly tokens used: {self.ref_monthly_tokens}"
 
 
 class TermGPTUi(App):
     """
-   This class represents the ShellGPT UI. 
-   
-   All widgets logic will be described here.
-   """
-    
-    GREETINGS: str = f"[{date()}] Hi {os.getenv('USER')}! Welcome in shellGPT\n Please insert an input to start using me"
+    This class represents the termGPT UI.
+
+    All widgets logic will be described here.
+    """
+
+    GREETINGS: str = f"[{date()}] Hi {os.getenv('USER')}! Welcome in termGPT\n Please insert an input to start using me"
 
     CSS = """
    Tabs {
@@ -116,20 +118,19 @@ class TermGPTUi(App):
         super().__init__()
         self.ui_states = TermGPTState.START
         self.tabs_counter = 0
-        self.shellGPT = TermGPT()
+        self.termGPT = TermGPT()
         self.md = Markdown()
         self.tokens = UpdateTokens()
-        self.vertical_scroll = ScrollableContainer(
-            self.md
-        )
+        self.vertical_scroll = ScrollableContainer(self.md)
 
-    def get_tokens_used(self) -> int: return self.tokens.ref_tokens
+    def get_tokens_used(self) -> int:
+        return self.tokens.ref_tokens
 
     def _save_info(self) -> None:
         """Save the instance information to data persistence"""
-        updated_tokens = (self.tokens.ref_monthly_tokens + self.get_tokens_used())
+        updated_tokens = self.tokens.ref_monthly_tokens + self.get_tokens_used()
         new_config = initial_config
-        new_config['shellGPT']['token_used'] = updated_tokens
+        new_config["termGPT"]["token_used"] = updated_tokens
         update_yaml_config(new_config=new_config)
 
     def compose(self) -> ComposeResult:
@@ -142,7 +143,9 @@ class TermGPTUi(App):
 
     def action_add(self) -> None:
         """Add a new tab."""
-        if self.tabs_counter >= 8: return
+        if self.tabs_counter >= 8:
+            return
+
         tabs = self.query_one(Tabs)
         self.md_pages.append(self.md_responses)
         self.md_responses = []
@@ -183,7 +186,9 @@ class TermGPTUi(App):
                 return
 
             self.tab_id: int = int(event.tab.id.replace("tab-", "")) - 1
-            if self.tab_id == 0 and self.ui_states == TermGPTState.START: return
+            if self.tab_id == 0 and self.ui_states == TermGPTState.START:
+                return
+
             restored_page = get_pages_content(self.md_pages[self.tab_id])
             md_tab.update(restored_page)
 
@@ -192,20 +197,24 @@ class TermGPTUi(App):
         """
         This function is triggered on Input.Submitted event.
 
-        Run the shellGPT engine calling openAI API and update the Markdown widget on the Terminal.
+        Run the termGPT engine calling openAI API and update the Markdown widget on the Terminal.
         """
-        if self.ui_states != TermGPTState.MIDDLE: self.ui_states = TermGPTState.MIDDLE
+        if self.ui_states != TermGPTState.MIDDLE:
+            self.ui_states = TermGPTState.MIDDLE
+
         if event.value:
-            gpt_content: dict = self.shellGPT.run(event.value)
-            self.md_gpt_actual_response: str = f"[{date()}] {self.shellGPT.parse_chat_content(gpt_content)}"
+            gpt_content: dict = self.termGPT.run(event.value)
+            self.md_gpt_actual_response: str = (
+                f"[{date()}] {self.termGPT.parse_chat_content(gpt_content)}"
+            )
             self.md_responses.append(self.md_gpt_actual_response)
 
-            if len(self.md_pages) == 0: self.md_pages.append(self.md_responses)
-            else: self.md_pages[self.tab_id].append(self.md_responses[-1])
+            if len(self.md_pages) == 0:
+                self.md_pages.append(self.md_responses)
+            else:
+                self.md_pages[self.tab_id].append(self.md_responses[-1])
 
-            self.tokens.update(self.shellGPT.increment_and_get_tokens(gpt_content))
+            self.tokens.update(self.termGPT.increment_and_get_tokens(gpt_content))
             self.md.update(markdown=self.md_gpt_actual_response)
             self.md_responses = []
             self._save_info()
-
-    # atexit.register(_save_info)

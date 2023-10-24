@@ -19,7 +19,7 @@
 - [x] Set data persistence
 - [x] Parse arguments to configure:
   - [x] Open ai Api key
-  - [ ] Switch to open ai or ShellGPT model
+  - [ ] Switch to open ai or termGPT model
 - [ ] Create chatbot model ai
 
 ### Misc

@@ -4,12 +4,13 @@ from textual.reactive import var
 
 from pathlib import Path
 
+
 class MarkdownApp(App):
     BINDINGS = [
         ("t", "toggle_table_of_contents", "TOC"),
         ("b", "back", "Back"),
         ("f", "forward", "Forward"),
-        ("q", "quit", "Exit")
+        ("q", "quit", "Exit"),
     ]
 
     @property
@@ -42,5 +43,5 @@ class MarkdownApp(App):
 
 if __name__ == "__main__":
     app = MarkdownApp()
-    app.path = Path(r'./TODO.md')
+    app.path = Path(r"./TODO.md")
     app.run()

@@ -2,6 +2,6 @@
 local:
   configuration_path: ""
 
-shellGPT:
+termGPT:
   api_key: ""
   tokens_used: 0
