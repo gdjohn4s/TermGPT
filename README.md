@@ -38,6 +38,40 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Temporary Build Process
+
+**This will be converted into a Cli command configuration**
+
+To set up a temporary build for this project, follow the steps below:
+
+1. **Set Up Configuration File:** From the project root, run the following command to copy sample environment variables:
+
+```bash
+cat .env.sample > .env
+```
+
+2. **API Key:** Edit the `.env` file and insert your API key where indicated.
+
+3. **Set Up Virtual Environment:** Create a new virtual environment by running:
+
+```bash
+python3 -m venv env
+```
+
+4. **Activate the Environment:** To activate the virtual environment, run:
+
+```bash
+source env/bin/activate
+```
+
+5. **Install Dependencies:** Install all required dependencies from the `requirements.txt` file with:
+
+```bash
+pip install -r requirements.txt
+```
+
+With these steps, you should have a temporary build environment set up and ready for use.
+
 ---
 
 ### Built With
