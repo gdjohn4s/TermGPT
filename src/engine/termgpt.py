@@ -59,7 +59,7 @@ class TermGPT:
             sys.stdout.flush()
             time.sleep(self.delay)
 
-    def parse_chat_content(self, text):
+    def parse_chat_content(self, text) -> str:
         """
         Parse the openai API response to get the content result
 
@@ -87,6 +87,3 @@ class TermGPT:
             model=self.model, messages=[{"role": self.role, "content": content}]
         )
         return chat_completion
-
-    def __del__(self) -> None:
-        print("Destroyed {}".format(self))

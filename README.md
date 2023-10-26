@@ -76,8 +76,6 @@ With these steps, you should have a temporary build environment set up and ready
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
 - [Textual](https://textual.textualize.io/)
 - [Rich](https://github.com/Textualize/rich)
 - [OpenAI Library](https://github.com/openai/openai-python)

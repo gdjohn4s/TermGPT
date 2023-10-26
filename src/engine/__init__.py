@@ -1,4 +1,4 @@
-from _info import initial_config
+from src._info import initial_config
 from dotenv import load_dotenv
 from datetime import datetime
 import platform
@@ -33,10 +33,13 @@ def create_yaml_config() -> None:
     if check_config_path():
         if not os.path.exists(f"{_config_path}/{_CONFIG_FILE}"):
             logging.info(f"Creating {_CONFIG_FILE} file")
+
             with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as cf:
                 yaml.dump(initial_config, cf, default_flow_style=False)
                 return
+
         return
+
     os.mkdir(_config_path)
     create_yaml_config()
 
@@ -44,6 +47,7 @@ def create_yaml_config() -> None:
 def update_yaml_config(new_config: dict[str, int | str]):
     if datetime.now().day == 1:
         new_config = initial_config["termGPT"]["tokens"] = 0
+
     with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as nc:
         yaml.dump(new_config, nc, default_flow_style=False)
 
@@ -51,8 +55,23 @@ def update_yaml_config(new_config: dict[str, int | str]):
 def get_tokens_from_yaml() -> int:
     with open(f"{_config_path}/{_CONFIG_FILE}", "r") as cfg:
         tmp_yaml = yaml.safe_load(cfg)
-        print(tmp_yaml)
         return tmp_yaml["termGPT"]["token_used"]
+
+
+def is_apikey_configured() -> bool:
+    with open(f"{_config_path}/{_CONFIG_FILE}", "r") as cfg:
+        tmp_yaml = yaml.safe_load(cfg)
+        api_key: str = tmp_yaml["termGPT"]["api_key"]
+
+        return api_key != None or api_key != ""
+
+
+def _get_api_key() -> str:
+    with open(f"{_config_path}/{_CONFIG_FILE}", "r") as cfg:
+        tmp_yaml = yaml.safe_load(cfg)
+        api_key: str = tmp_yaml["termGPT"]["api_key"]
+
+        return api_key
 
 
 if _os == "Windows":
@@ -72,8 +91,5 @@ else:
 
 logging.info("{} operating system detected".format(_os))
 create_yaml_config()
-
-# TODO: Edit assert to new configuration logic
-assert os.getenv("API_KEY") != "<YOUR_API_KEY>", "Please enter your API key"
 
 __all__ = [_os, _home, _config_path, _CONFIG_FILE]

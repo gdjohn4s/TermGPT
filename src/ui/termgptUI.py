@@ -1,9 +1,10 @@
 # termgptUI.py
 from textual.containers import ScrollableContainer
 from textual.app import App, ComposeResult
+from src.engine.termgpt import TermGPT
 from textual.reactive import reactive
+from src.engine import _get_api_key
 from textual.binding import Binding
-from engine.termgpt import TermGPT
 from textual.widget import Widget
 from dotenv import load_dotenv
 from textual.widgets import (
@@ -19,14 +20,14 @@ from enum import Enum
 import openai
 import os
 
-from _info import initial_config
-from engine import (
+from src._info import initial_config
+from src.engine import (
     update_yaml_config,
     get_tokens_from_yaml,
 )
 
-load_dotenv()  # Load environment variables
-openai.api_key = os.getenv("API_KEY")
+
+openai.api_key = _get_api_key()
 date = lambda: datetime.now().strftime("%H:%M:%S")
 
 
@@ -127,6 +128,7 @@ class TermGPTUi(App):
         return self.tokens.ref_tokens
 
     def _save_info(self) -> None:
+        # FIXME: This override the apikey config
         """Save the instance information to data persistence"""
         updated_tokens = self.tokens.ref_monthly_tokens + self.get_tokens_used()
         new_config = initial_config
