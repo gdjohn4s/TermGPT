@@ -3,14 +3,24 @@ from src.ui.termgptUI import TermGPTUi
 from src.engine.termgpt import TermGPT
 from rich.console import Console
 from src._info import CLI_HEADER
+from enum import Enum
 import argparse
 import yaml
+
+
+class CliState(Enum):
+    # TODO: change state to cli application
+    STARTED = 0
+    EXECUTION = 1
+    LOADING = 2
+    ERROR = 3
+    STOPPED = 4
 
 
 class Args:
     """Class containing constant arguments for CLI commands."""
 
-    SETAPIKEY = "setKey"
+    SETAPIKEY = "setkey"
     PROMPT = "prompt"
     GUI = "gui"
 
