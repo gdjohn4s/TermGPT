@@ -6,7 +6,6 @@ from textual.reactive import reactive
 from src.engine import _get_api_key
 from textual.binding import Binding
 from textual.widget import Widget
-from dotenv import load_dotenv
 from textual.widgets import (
     MarkdownViewer,
     Markdown,
@@ -28,7 +27,10 @@ from src.engine import (
 
 
 openai.api_key = _get_api_key()
-date = lambda: datetime.now().strftime("%H:%M:%S")
+
+
+def date():
+    return datetime.now().strftime("%H:%M:%S")
 
 
 def compose_md_view(md: str) -> ComposeResult:
@@ -205,9 +207,9 @@ class TermGPTUi(App):
             self.ui_states = TermGPTState.MIDDLE
 
         if event.value:
-            gpt_content: dict = self.termGPT.run(event.value)
+            gpt_content: dict = self.termGPT.run(event.value, stream=True)
             self.md_gpt_actual_response: str = (
-                f"[{date()}] {self.termGPT.parse_chat_content(gpt_content)}"
+                f"[{date()}] {self.termGPT.parse_chat_content(gpt_content, True)}"
             )
             self.md_responses.append(self.md_gpt_actual_response)
 
