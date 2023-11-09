@@ -1,7 +1,14 @@
 # termgpt.py
+from typing import Generator, Any, cast
+from enum import Enum
 import openai
 import time
 import sys
+
+
+class TermGPTState(Enum):
+    CLI_MODE = False
+    IS_LOADING = False
 
 
 class TermGPT:
@@ -59,7 +66,7 @@ class TermGPT:
             sys.stdout.flush()
             time.sleep(self.delay)
 
-    def parse_chat_content(self, text) -> str:
+    def parse_chat_content(self, text: Generator, stream: bool) -> Generator:
         """
         Parse the openai API response to get the content result
 
@@ -67,13 +74,22 @@ class TermGPT:
 
         Attributes
         ----------
-        text : Any | Literal['']
+        text : Generator
         """
-        assert isinstance(text, dict)
-        choices = text.get("choices", [])
-        return choices[0].get("message", {}).get("content", "") if choices else ""
+        # assert isinstance(text, dict)
+        # converted_choices: dict = dict(text)
+        response_iterator = cast(Any, text)
 
-    def run(self, content) -> dict:
+        if stream:
+            for resp in response_iterator:
+                next = resp["choices"][0]
+                if next["finish_reason"] is None and "content" in next["delta"]:
+                    yield next["delta"]["content"]
+        else:
+            next = response_iterator["choices"][0]
+            yield next["message"]["content"]
+
+    def run(self, content: str, stream: bool) -> dict:
         """
         Run the engine calling openai API to use chatGPT
 
@@ -84,6 +100,8 @@ class TermGPT:
         content : str
         """
         chat_completion = openai.ChatCompletion.create(
-            model=self.model, messages=[{"role": self.role, "content": content}]
+            model=self.model,
+            stream=stream,
+            messages=[{"role": self.role, "content": content}],
         )
         return chat_completion
