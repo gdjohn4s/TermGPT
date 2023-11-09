@@ -1,20 +1,23 @@
 from src.engine import _config_path, _CONFIG_FILE
+from src._info import CLI_HEADER, MD_HEADER
 from src.ui.termgptUI import TermGPTUi
 from src.engine.termgpt import TermGPT
+from rich.markdown import Markdown
 from rich.console import Console
-from src._info import CLI_HEADER
-from enum import Enum
+from typing import Generator
+from rich.live import Live
 import argparse
 import yaml
+import sys
 
 
-class CliState(Enum):
+class CliState:
     # TODO: change state to cli application
-    STARTED = 0
-    EXECUTION = 1
-    LOADING = 2
-    ERROR = 3
-    STOPPED = 4
+    STARTED = False
+    EXECUTION = False
+    LOADING = False
+    ERROR = False
+    STOPPED = False
 
 
 class Args:
@@ -22,6 +25,7 @@ class Args:
 
     SETAPIKEY = "setkey"
     PROMPT = "prompt"
+    SHELL = "shell"
     GUI = "gui"
 
 
@@ -40,11 +44,13 @@ class Cli:
     def __init__(self):
         """Initializes the CLI tool with argument parsers and subparsers."""
         print(CLI_HEADER)
+        CliState.EXECUTION = True
         self.parser = argparse.ArgumentParser(
             description="TermGPT tool made by gdjohn4s."
         )
         self.subparsers = self.parser.add_subparsers(dest="command")
         self._add_subparsers()
+        self._shell_subparser()
 
     def _add_subparsers(self):
         """Private method to add specific command subparsers."""
@@ -67,6 +73,11 @@ class Cli:
         ask_gpt.add_argument("prompt", type=str, help="prompt to send to chatgpt")
         ask_gpt.set_defaults(func=self.ask_gpt)
 
+    def _shell_subparser(self):
+        # Shell command
+        spawn_gui = self.subparsers.add_parser(Args.SHELL, help="spawn a gpt shell")
+        spawn_gui.set_defaults(func=self.shell)
+
     def set_key(self, args: argparse.Namespace):
         """Set the OpenAI API key in the configuration.
 
@@ -83,7 +94,53 @@ class Cli:
 
         with open(f"{_config_path}/{_CONFIG_FILE}", "w") as nc:
             yaml.dump(new_config, nc, default_flow_style=False)
-            self.console.print(f"Api key [green]imported[/green]")
+            self.console.print("Api key [green]imported[/green]")
+
+    def print_response(self, response: Generator):
+        """
+        Renders Markdown content in real-time from a character generator to the console.
+
+        This function takes a generator that yields Markdown-formatted characters one at a time.
+        It progressively builds the Markdown content and uses the Rich library's Live object to render
+        it in the console. The rendering is updated in real-time with each new character received.
+
+        The Live object ensures that the output is displayed within the terminal's visible area
+        and overwrites the previous content smoothly, creating an animation effect as the content appears character by character.
+
+        Parameters:
+        - response (Generator): A generator object that yields characters of the Markdown content.
+
+        The function handles KeyboardInterrupt to allow the user to stop the rendering process cleanly.
+        At the end of the function, or if interrupted, it flushes the system's stdout buffer to ensure all content is written to the terminal.
+
+        Example usage:
+        >>> response_generator = (char for char in "# Hello, World!")
+        >>> your_class_instance = YourClassName()
+        >>> your_class_instance.print_response(response_generator)
+
+        Note: This function is designed to be a method of a class that contains a 'console' attribute initialized with Rich's Console class.
+        """
+        markdown_content = ""
+
+        # Using context to manage the Live object
+        with Live(
+            console=self.console, auto_refresh=False, vertical_overflow="visible"
+        ) as live:
+            try:
+                for char in response:
+                    markdown_content += char
+                    content = Markdown(markdown_content)
+
+                    # Update the live object
+                    live.update(content)
+                    live.refresh()
+
+            except KeyboardInterrupt:
+                # Allow clean exit on user interrupt
+                pass
+            finally:
+                # Ensure the terminal's buffer is flushed
+                sys.stdout.flush()
 
     def ask_gpt(self, args: argparse.Namespace):
         """Prompt ChatGPT and display the response.
@@ -92,11 +149,23 @@ class Cli:
             args (argparse.Namespace): Contains the prompt attribute.
         """
         gpt = TermGPT()
-        response = gpt.run(args.prompt)
-        parsed_response = gpt.parse_chat_content(response)
+        response = gpt.run(args.prompt, stream=True)
+        parsed_response = gpt.parse_chat_content(response, stream=True)
         self.console.print("TermGPT: ", end="", style="green")
-        gpt.simulate_typing(parsed_response)
+        self.print_response(parsed_response)
+
+        CliState.EXECUTION = False
         exit(0)
+
+    def shell(self, args):
+        md_head = Markdown(MD_HEADER)
+        self.console.print(md_head)
+
+        while CliState.EXECUTION:
+            prompt = input("TermGPT> ")
+            print(prompt)
+
+        print("Hello Shell")
 
     def gui(self, args):
         """Run the GUI version of TermGPT."""
