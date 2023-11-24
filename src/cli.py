@@ -1,10 +1,17 @@
-from src.engine import _config_path, _CONFIG_FILE
-from src._info import CLI_HEADER, MD_HEADER
+from typing_extensions import override
+from src._info import CLI_HEADER, MD_HEADER, ALL_POSSIBLE_MODELS
 from src.ui.termgptUI import TermGPTUi
 from src.engine.termgpt import TermGPT
 from rich.markdown import Markdown
 from rich.console import Console
 from typing import Generator
+from src.engine import (
+        _config_path, 
+        _CONFIG_FILE, 
+        get_all_config, 
+        update_yaml_config,
+        initial_config,
+    )
 from rich.live import Live
 import argparse
 import yaml
@@ -27,6 +34,13 @@ class Args:
     PROMPT = "prompt"
     SHELL = "shell"
     GUI = "gui"
+    MODELS = "models"
+    RESET = "reset"
+
+
+class Options:
+    SET_API_KEY_OPT = "--set-key"
+    SET_MODEL = "--set-model"
 
 
 class Cli:
@@ -46,11 +60,15 @@ class Cli:
         print(CLI_HEADER)
         CliState.EXECUTION = True
         self.parser = argparse.ArgumentParser(
-            description="TermGPT tool made by gdjohn4s."
+            prog="TermGPT", description="TermGPT tool made by gdjohn4s."
         )
         self.subparsers = self.parser.add_subparsers(dest="command")
         self._add_subparsers()
         self._shell_subparser()
+        self._model_subparser()
+        self._reset_config_subparser()
+        # self._set_model_subparser()
+        # self._model_subparser()
 
     def _add_subparsers(self):
         """Private method to add specific command subparsers."""
@@ -75,9 +93,51 @@ class Cli:
 
     def _shell_subparser(self):
         # Shell command
-        spawn_gui = self.subparsers.add_parser(Args.SHELL, help="spawn a gpt shell")
-        spawn_gui.set_defaults(func=self.shell)
+        shell = self.subparsers.add_parser(Args.SHELL, help="spawn a gpt shell")
+        shell.set_defaults(func=self.shell)
 
+    def _model_subparser(self):
+        # Model parser
+        model_parser = self.subparsers.add_parser(Args.MODELS, help="gpt model handling")
+        model_list = model_parser.add_subparsers(dest="model_command", help="Model sub-commands")
+
+        # List for all models
+        list_parser = model_list.add_parser("list", help="List available models for chatGPT")
+        list_parser.set_defaults(func=self.spawn_model_list)
+    
+        # Set a new model
+        set_model_parser = model_list.add_parser("set-model", help="Set a new gpt model")
+        set_model_parser.add_argument('model_name', type=str, help='Name of the GPT model to set as current')
+        set_model_parser.set_defaults(func=self.set_model)
+
+        # model_list.add_argument("list", help="List of gpt models")
+        # model_list.set_defaults(func=self.spawn_model_list)
+
+    def _reset_config_subparser(self):
+        # Reset command
+        reset = self.subparsers.add_parser(Args.RESET, help="reset the configuration")
+        reset.set_defaults(func=self.reset_configuration)
+
+    # def _set_model_subparser(self):
+    #     set_model = self.subparsers.add_parser(Args.MODELS, help="set new model")
+    #     set_model.add_argument("model_name", help="set new model for gpt")
+        # set_model.set_defaults(func=self.set_model)
+    # def _model_subparser(self):
+    #     # Subparser for model choice
+    #     self.parser.add_argument(
+    #         "-m",
+    #         "--model",
+    #         help="Choose new gpt model",
+    #         type=str,
+    #         action="store",
+    #         dest="model_name",
+    #     )
+    #     args = self.parser.parse_args()
+    #     self.set_model(args.model_name)
+
+    #     exit(0)
+
+    # -- Cli Functions -- #
     def set_key(self, args: argparse.Namespace):
         """Set the OpenAI API key in the configuration.
 
@@ -157,7 +217,7 @@ class Cli:
         CliState.EXECUTION = False
         exit(0)
 
-    def shell(self, args):
+    def shell(self, args: argparse.Namespace = None):
         md_head = Markdown(MD_HEADER)
         self.console.print(md_head)
 
@@ -167,15 +227,47 @@ class Cli:
 
         print("Hello Shell")
 
-    def gui(self, args):
+    def gui(self, args: argparse.Namespace = None):
         """Run the GUI version of TermGPT."""
         term_gui = TermGPTUi()
         term_gui.run()
 
+    def spawn_model_list(self, args: argparse.Namespace = None):
+        print("Models Available:")
+        config = get_all_config()
+        model_selected = config["termGPT"]["model"]
+        for model in ALL_POSSIBLE_MODELS:
+            if model_selected == model:
+                self.console.print(f"[yellow]{model}[/yellow] (Actual Selected)")
+            else:
+                self.console.print(f"[green]{model}[/green]")
+
+    def set_model(self, args):
+        if args.model_name not in ALL_POSSIBLE_MODELS:
+            self.console.print(
+                f"[red]ERROR!![/red] The model [bold]{args.model_name}[/bold] is not present on our available models!"
+            )
+            print("Choose one from this list instead!")
+
+            for model in ALL_POSSIBLE_MODELS:
+                self.console.print(f"[green]{model}[/green]")
+            exit(1)
+        config = get_all_config()
+        config["termGPT"]["model"] = args.model_name
+        update_yaml_config(new_config=config)
+        self.console.print(f"Chosen model: [bold]{args.model_name.capitalize()}[/bold]")
+
+    def reset_configuration(self, args=None):
+        update_yaml_config(new_config=initial_config)
+        self.console.print("Configuration [green]initialized[/green]")
+        
     def run(self):
         """Parse the arguments and execute the corresponding command."""
         args = self.parser.parse_args()
-        if args.command is None:
+        if args.command is None or args is None:
             self.parser.print_help()
         else:
-            args.func(args)
+            try:
+                args.func(args)
+            except AttributeError:
+                self.parser.print_help()
