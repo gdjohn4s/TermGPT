@@ -1,4 +1,4 @@
-from src._info import initial_config
+from src.info import initial_config
 from dotenv import load_dotenv
 from datetime import datetime
 import platform
@@ -35,6 +35,7 @@ def create_yaml_config() -> None:
             logging.info(f"Creating {_CONFIG_FILE} file")
 
             with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as cf:
+                initial_config["local"]["configuration_path"] = _config_path
                 yaml.dump(initial_config, cf, default_flow_style=False)
                 return
 

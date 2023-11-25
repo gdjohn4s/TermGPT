@@ -1,5 +1,6 @@
 # termgpt.py
 from typing import Generator, Any, cast
+from src.engine import get_all_config
 from enum import Enum
 import openai
 import time
@@ -24,12 +25,13 @@ class TermGPT:
        the model you want to use like: gpt-3.5-turbo
 
     """
+    config = get_all_config()
 
-    def __init__(self, model="gpt-3.5-turbo", role="user"):
-        self.model = model
-        self.role = role
-        self.delay = 0.01
-        self.total_tokens_used = 0
+    def __init__(self, role="user"):
+        self.model = self.config["termGPT"]["model"]
+        self.role = self.config["termGPT"]["role"]
+        self.delay = self.config["termGPT"]["delay"]
+        self.total_tokens_used = self.config["termGPT"]["token_used"]
 
     def increment_and_get_tokens(self, text) -> int:
         """
