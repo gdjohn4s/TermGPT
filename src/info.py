@@ -1,6 +1,5 @@
 # informations and constants
 from typing import Union
-# from src.engine import _config_path, _CONFIG_FILE
 
 CLI_HEADER: str = """
 ████████╗███████╗██████╗░███╗░░░███╗░██████╗░██████╗░████████╗
@@ -12,7 +11,7 @@ CLI_HEADER: str = """
 """
 
 MD_HEADER: str = """
-# Welcome to termgpt!
+# Welcome to TermGPT Shell!
 
 Hello there! 👋 We're thrilled to have you onboard. 
 If you have any questions or need assistance, feel free to ask. 
@@ -20,8 +19,17 @@ Let's make your terminal experience amazing!
 """
 
 initial_config: dict[str, Union[int, str]] = {
-    "local": {"configuration_path": ""},
-    "termGPT": {"api_key": "", "model": "gpt-3.5-turbo", "token_used": 0},
+    "local": {
+        "configuration_path": "Path",
+    },
+    "termGPT": {
+        "api_key": "", 
+        "model": "gpt-3.5-turbo", 
+        "token_used": 0,
+        "token_price_spent": 0.0,
+        "delay": 0.01,
+        "role": "user"
+    },
 }
 
 ALL_POSSIBLE_MODELS = [

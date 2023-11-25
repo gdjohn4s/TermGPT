@@ -1,5 +1,4 @@
-from typing_extensions import override
-from src._info import CLI_HEADER, MD_HEADER, ALL_POSSIBLE_MODELS
+from src.info import MD_HEADER, ALL_POSSIBLE_MODELS
 from src.ui.termgptUI import TermGPTUi
 from src.engine.termgpt import TermGPT
 from rich.markdown import Markdown
@@ -57,7 +56,6 @@ class Cli:
 
     def __init__(self):
         """Initializes the CLI tool with argument parsers and subparsers."""
-        print(CLI_HEADER)
         CliState.EXECUTION = True
         self.parser = argparse.ArgumentParser(
             prog="TermGPT", description="TermGPT tool made by gdjohn4s."
@@ -67,8 +65,6 @@ class Cli:
         self._shell_subparser()
         self._model_subparser()
         self._reset_config_subparser()
-        # self._set_model_subparser()
-        # self._model_subparser()
 
     def _add_subparsers(self):
         """Private method to add specific command subparsers."""
@@ -92,12 +88,14 @@ class Cli:
         ask_gpt.set_defaults(func=self.ask_gpt)
 
     def _shell_subparser(self):
+        """Subparser for interactive shell"""
         # Shell command
         shell = self.subparsers.add_parser(Args.SHELL, help="spawn a gpt shell")
         shell.set_defaults(func=self.shell)
 
     def _model_subparser(self):
-        # Model parser
+        """Subparser for models commands"""
+        # Model parse
         model_parser = self.subparsers.add_parser(Args.MODELS, help="gpt model handling")
         model_list = model_parser.add_subparsers(dest="model_command", help="Model sub-commands")
 
@@ -110,32 +108,10 @@ class Cli:
         set_model_parser.add_argument('model_name', type=str, help='Name of the GPT model to set as current')
         set_model_parser.set_defaults(func=self.set_model)
 
-        # model_list.add_argument("list", help="List of gpt models")
-        # model_list.set_defaults(func=self.spawn_model_list)
-
     def _reset_config_subparser(self):
         # Reset command
         reset = self.subparsers.add_parser(Args.RESET, help="reset the configuration")
         reset.set_defaults(func=self.reset_configuration)
-
-    # def _set_model_subparser(self):
-    #     set_model = self.subparsers.add_parser(Args.MODELS, help="set new model")
-    #     set_model.add_argument("model_name", help="set new model for gpt")
-        # set_model.set_defaults(func=self.set_model)
-    # def _model_subparser(self):
-    #     # Subparser for model choice
-    #     self.parser.add_argument(
-    #         "-m",
-    #         "--model",
-    #         help="Choose new gpt model",
-    #         type=str,
-    #         action="store",
-    #         dest="model_name",
-    #     )
-    #     args = self.parser.parse_args()
-    #     self.set_model(args.model_name)
-
-    #     exit(0)
 
     # -- Cli Functions -- #
     def set_key(self, args: argparse.Namespace):
@@ -217,15 +193,13 @@ class Cli:
         CliState.EXECUTION = False
         exit(0)
 
-    def shell(self, args: argparse.Namespace = None):
+    def shell(self, args: argparse.Namespace):
         md_head = Markdown(MD_HEADER)
         self.console.print(md_head)
 
         while CliState.EXECUTION:
             prompt = input("TermGPT> ")
-            print(prompt)
-
-        print("Hello Shell")
+            print("interactive shell coming soon!")
 
     def gui(self, args: argparse.Namespace = None):
         """Run the GUI version of TermGPT."""

@@ -1,6 +1,7 @@
 #!/usr/bin/env python -O
 from openai.error import AuthenticationError
 from rich.console import Console
+from src.info import CLI_HEADER
 from src.cli import Cli
 
 
@@ -12,6 +13,9 @@ def main():
     except AuthenticationError:
         console.print("Error authenticating to openai!", style="red")
         print("Did you forget to set your openai key?")
+    except KeyboardInterrupt:
+        print(CLI_HEADER)
+        console.print("Thanks for using [green]TermGPT![/green]")
 
 
 if __name__ == "__main__":
