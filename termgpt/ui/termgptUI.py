@@ -1,9 +1,9 @@
 # termgptUI.py
 from textual.containers import ScrollableContainer
 from textual.app import App, ComposeResult
-from src.engine.termgpt import TermGPT
+from termgpt.engine.termgpt import TermGPT
 from textual.reactive import reactive
-from src.engine import _get_api_key
+from termgpt.engine import _get_api_key
 from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import (
@@ -19,8 +19,8 @@ from enum import Enum
 import openai
 import os
 
-from src._info import initial_config
-from src.engine import (
+from termgpt.info import initial_config
+from termgpt.engine import (
     update_yaml_config,
     get_tokens_from_yaml,
 )

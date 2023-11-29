@@ -1,16 +1,16 @@
-from src.info import MD_HEADER, ALL_POSSIBLE_MODELS
-from src.ui.termgptUI import TermGPTUi
-from src.engine.termgpt import TermGPT
+from termgpt.info import MD_HEADER, ALL_POSSIBLE_MODELS
+from termgpt.ui.termgptUI import TermGPTUi
+from termgpt.engine.termgpt import TermGPT
 from rich.markdown import Markdown
 from rich.console import Console
 from typing import Generator
-from src.engine import (
-        _config_path, 
-        _CONFIG_FILE, 
-        get_all_config, 
-        update_yaml_config,
-        initial_config,
-    )
+from termgpt.engine import (
+    _config_path,
+    _CONFIG_FILE,
+    get_all_config,
+    update_yaml_config,
+    initial_config,
+)
 from rich.live import Live
 import argparse
 import yaml
@@ -96,16 +96,26 @@ class Cli:
     def _model_subparser(self):
         """Subparser for models commands"""
         # Model parse
-        model_parser = self.subparsers.add_parser(Args.MODELS, help="gpt model handling")
-        model_list = model_parser.add_subparsers(dest="model_command", help="Model sub-commands")
+        model_parser = self.subparsers.add_parser(
+            Args.MODELS, help="gpt model handling"
+        )
+        model_list = model_parser.add_subparsers(
+            dest="model_command", help="Model sub-commands"
+        )
 
         # List for all models
-        list_parser = model_list.add_parser("list", help="List available models for chatGPT")
+        list_parser = model_list.add_parser(
+            "list", help="List available models for chatGPT"
+        )
         list_parser.set_defaults(func=self.spawn_model_list)
-    
+
         # Set a new model
-        set_model_parser = model_list.add_parser("set-model", help="Set a new gpt model")
-        set_model_parser.add_argument('model_name', type=str, help='Name of the GPT model to set as current')
+        set_model_parser = model_list.add_parser(
+            "set-model", help="Set a new gpt model"
+        )
+        set_model_parser.add_argument(
+            "model_name", type=str, help="Name of the GPT model to set as current"
+        )
         set_model_parser.set_defaults(func=self.set_model)
 
     def _reset_config_subparser(self):
@@ -234,7 +244,7 @@ class Cli:
     def reset_configuration(self, args=None):
         update_yaml_config(new_config=initial_config)
         self.console.print("Configuration [green]initialized[/green]")
-        
+
     def run(self):
         """Parse the arguments and execute the corresponding command."""
         args = self.parser.parse_args()
