@@ -50,7 +50,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "termgpt = src.start:main",
+            "termgpt = termgpt.start:main",
         ],
     },
 )

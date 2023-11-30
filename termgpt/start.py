@@ -1,8 +1,8 @@
 #!/usr/bin/env python -O
 from openai.error import AuthenticationError
 from rich.console import Console
-from src.info import CLI_HEADER
-from src.cli import Cli
+from termgpt.info import CLI_HEADER
+from termgpt.cli import Cli
 
 
 def main():

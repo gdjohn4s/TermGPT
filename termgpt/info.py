@@ -23,12 +23,12 @@ initial_config: dict[str, Union[int, str]] = {
         "configuration_path": "Path",
     },
     "termGPT": {
-        "api_key": "", 
-        "model": "gpt-3.5-turbo", 
+        "api_key": "",
+        "model": "gpt-3.5-turbo",
         "token_used": 0,
         "token_price_spent": 0.0,
         "delay": 0.01,
-        "role": "user"
+        "role": "user",
     },
 }
 

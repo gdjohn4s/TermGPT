@@ -1,4 +1,4 @@
-from src.info import initial_config
+from termgpt.info import initial_config
 from dotenv import load_dotenv
 from datetime import datetime
 import platform
@@ -48,7 +48,7 @@ def create_yaml_config() -> None:
 def update_yaml_config(new_config: dict[str, int | str]):
     if datetime.now().day == 1:
         new_config = initial_config["termGPT"]["tokens"] = 0
-    
+
     with open(f"{_config_path}/{_CONFIG_FILE}", "w+") as nc:
         yaml.dump(new_config, nc, default_flow_style=False)
 
