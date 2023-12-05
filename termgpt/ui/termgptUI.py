@@ -3,7 +3,7 @@ from textual.containers import ScrollableContainer
 from textual.app import App, ComposeResult
 from termgpt.engine.termgpt import TermGPT
 from textual.reactive import reactive
-from termgpt.engine import _get_api_key
+from termgpt.engine import get_api_key
 from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import (
@@ -26,7 +26,7 @@ from termgpt.engine import (
 )
 
 
-openai.api_key = _get_api_key()
+openai.api_key = get_api_key()
 
 
 def date():
@@ -114,7 +114,8 @@ class TermGPTUi(App):
 
     md_pages: list[list[str]] = []
     md_responses: list[str] = []
-    md_gpt_actual_response: str = None
+    md_gpt_actual_response: str = ""
+
     tab_id: int = 0
 
     def __init__(self):

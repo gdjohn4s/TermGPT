@@ -13,6 +13,8 @@
   <a href="#features">Key Features</a> •
 </p>
 
+![preview](./assets/preview.gif)
+
 ![screenshot](./assets/Hero.png)
 
 <!-- ABOUT THE PROJECT -->
@@ -38,39 +40,94 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Temporary Build Process
+# TermGPT Build Instructions
 
-**This will be converted into a Cli command configuration**
+## Prerequisites
 
-To set up a temporary build for this project, follow the steps below:
+Before you begin, ensure you have the following installed:
 
-1. **Set Up Configuration File:** From the project root, run the following command to copy sample environment variables:
+- Python 3.x
 
-```bash
-cat .env.sample > .env
-```
+## Building TermGPT
 
-2. **API Key:** Edit the `.env` file and insert your API key where indicated.
+Building TermGPT is straightforward. Follow these simple steps:
 
-3. **Set Up Virtual Environment:** Create a new virtual environment by running:
+### Standard Build
 
-```bash
-python3 -m venv env
-```
-
-4. **Activate the Environment:** To activate the virtual environment, run:
+1. Open your terminal.
+2. Navigate to the root directory of the TermGPT project.
+3. Run the following command:
 
 ```bash
-source env/bin/activate
+python3 build.py
 ```
 
-5. **Install Dependencies:** Install all required dependencies from the `requirements.txt` file with:
+This will compile and create the TermGPT pip package.
 
-```bash
-pip install -r requirements.txt
+### Building in a Virtual Environment
+
+If you prefer to build within a virtual environment, follow these steps:
+
+1. Open your terminal.
+2. Navigate to the TermGPT project directory.
+3. Create a virtual environment:
+
+```
+python3 -m venv myenv
 ```
 
-With these steps, you should have a temporary build environment set up and ready for use.
+Replace `myenv` with your preferred environment name.
+
+4. Activate the virtual environment:
+
+- On Windows:
+  ```
+  myenv\Scripts\activate
+  ```
+- On Unix or MacOS:
+  ```
+  source myenv/bin/activate
+  ```
+
+5. Once the environment is activated, run:
+   python3 build.py
+
+This builds the TermGPT package within the virtual environment.
+
+## Running TermGPT
+
+After successfully building the package, you can run TermGPT by simply typing the following command in your terminal:
+
+```
+termgpt -h
+```
+
+## Disclaimer
+
+Before using the tool, it is necessary to generate an API key from OpenAI and insert it using the command:
+
+```
+termgpt setkey <YOUR_KEY>
+```
+
+The standard configuration can be found at the path: \
+`/your/home/.config/termgpt/config.yaml`\
+ and has the following structure:
+
+```yaml
+configuration_path: string
+termGPT:
+  api_key: string
+  delay: float
+  model: string
+  role: string
+  token_used: int
+```
+
+## Additional Information
+
+- Ensure you have the necessary permissions to execute the build script.
+- If you encounter any issues, please check the [Issues](https://github.com/gdjohn4s/TermGPT/issues) section or open a new issue.
 
 ---
 

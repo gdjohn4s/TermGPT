@@ -5,8 +5,8 @@ from rich.markdown import Markdown
 from rich.console import Console
 from typing import Generator
 from termgpt.engine import (
-    _config_path,
-    _CONFIG_FILE,
+    config_path,
+    CONFIG_FILE,
     get_all_config,
     update_yaml_config,
     initial_config,
@@ -65,6 +65,12 @@ class Cli:
         self._shell_subparser()
         self._model_subparser()
         self._reset_config_subparser()
+
+    def save_info(self, tokens_used) -> None:
+        """Save the instance information to data persistence"""
+        new_config = get_all_config()
+        new_config["termGPT"]["token_used"] += tokens_used
+        update_yaml_config(new_config=new_config)
 
     def _add_subparsers(self):
         """Private method to add specific command subparsers."""
@@ -130,15 +136,13 @@ class Cli:
         Args:
             args (argparse.Namespace): Contains the api_key attribute.
         """
-        with open(f"{_config_path}/{_CONFIG_FILE}", "r") as nc:
+        with open(f"{config_path}/{CONFIG_FILE}", "r") as nc:
             new_config = yaml.safe_load(nc)
-            self.console.print(
-                f"File {_CONFIG_FILE} opened [green]Successfully[/green]"
-            )
+            self.console.print(f"File {CONFIG_FILE} opened [green]Successfully[/green]")
 
         new_config["termGPT"]["api_key"] = args.api_key
 
-        with open(f"{_config_path}/{_CONFIG_FILE}", "w") as nc:
+        with open(f"{config_path}/{CONFIG_FILE}", "w") as nc:
             yaml.dump(new_config, nc, default_flow_style=False)
             self.console.print("Api key [green]imported[/green]")
 
@@ -168,7 +172,7 @@ class Cli:
         """
         markdown_content = ""
 
-        # Using context to manage the Live object
+        # Using conresponse to manage the Live object
         with Live(
             console=self.console, auto_refresh=False, vertical_overflow="visible"
         ) as live:
@@ -197,6 +201,10 @@ class Cli:
         gpt = TermGPT()
         response = gpt.run(args.prompt, stream=True)
         parsed_response = gpt.parse_chat_content(response, stream=True)
+
+        print(gpt.total_tokens_used)
+        # self.save_info(tokens_used)
+
         self.console.print("TermGPT: ", end="", style="green")
         self.print_response(parsed_response)
 
@@ -253,5 +261,6 @@ class Cli:
         else:
             try:
                 args.func(args)
-            except AttributeError:
+            except AttributeError as e:
+                print(e)
                 self.parser.print_help()

@@ -1,4 +1,4 @@
-from engine import _config_path
+from engine import config_path
 import yaml
 
 
@@ -10,6 +10,6 @@ class Config:
     def __init__(self) -> None:
         super().__init__()
 
-    def parse_config(self) -> dict:
-        with open(_config_path, "r") as cf:
+    def parse_config(self):
+        with open(config_path, "r") as cf:
             return yaml.safe_load(cf)
