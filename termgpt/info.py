@@ -1,5 +1,4 @@
 # informations and constants
-from typing import Union
 
 CLI_HEADER: str = """
 ████████╗███████╗██████╗░███╗░░░███╗░██████╗░██████╗░████████╗
@@ -18,10 +17,8 @@ If you have any questions or need assistance, feel free to ask.
 Let's make your terminal experience amazing!
 """
 
-initial_config: dict[str, Union[int, str]] = {
-    "local": {
-        "configuration_path": "Path",
-    },
+initial_config: dict[str, str | dict[str, str | int | float]] = {
+    "configuration_path": "Path",
     "termGPT": {
         "api_key": "",
         "model": "gpt-3.5-turbo",
@@ -30,7 +27,7 @@ initial_config: dict[str, Union[int, str]] = {
         "delay": 0.01,
         "role": "user",
     },
-}
+}  # type: ignore
 
 ALL_POSSIBLE_MODELS = [
     "gpt-4",
